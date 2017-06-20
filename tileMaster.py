@@ -19,6 +19,8 @@ It defines classes_and_methods
 import sys
 import os
 
+import folderToolbox
+
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
 
@@ -27,6 +29,18 @@ __date__ = '2017-06-20'
 __updated__ = '2017-06-20'
 
 DEBUG = 0
+
+
+# +------------+
+# | 1 |  2 | 3 |
+# |---+----+---|
+# | 4 | 5  | 6 | 
+# +--------+---+
+        #top,bottom,left,right
+TILE_1= ["0" , "360", "0", "640"]
+TILE_2 = ["0" , "360", "640", "0"]
+TILE_3 = ["360" , "0", "0", "640"]
+TILE_4 = ["360" , "0", "640", "0"]
 
 class Tiler:
     '''Command line options.'''
@@ -39,6 +53,7 @@ class Tiler:
     parser = ArgumentParser(description="Tiler", formatter_class=RawDescriptionHelpFormatter)
     ##InputFileFullPath: Path of the Premiere Xml file
     parser.add_argument('-i','--InputFileFullPath')
+    parser.add_argument('-o','--OutputFileFullPath')
     parser.add_argument('-V', '--version', action='version', version=__version__)
     
 
@@ -48,6 +63,7 @@ class Tiler:
 
     if __name__ == '__main__':
         print ("i2caTiler")
+        folderToolbox.OutputMainFolders(args.InputFileFullPath,args.OutputFileFullPath)
 
         
 
