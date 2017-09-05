@@ -10,4 +10,8 @@ OuputhPath = ""
 #Paths fore share accros the program
 MainPathFolder =""
 TempFolder = ""
-namePipe = ""
+namePipe = "/tmp/temp_files/tile.pipe"
+
+#Hardcoded Params
+frameRate = 25
+
