@@ -137,41 +137,33 @@ class Tiler(object):
         
         print ("i2caTiler")
 #         '''Command line options.'''
-#         program_name = "Tiler"
-#         program_version = "v%s" % __version__
-#         program_build_date = str(__updated__)
-#         program_version_message = '%s (%s)' % (program_version, program_build_date)
-#     
-#         # Setup argument parser
-#         parser = ArgumentParser(description="Tiler", formatter_class=RawDescriptionHelpFormatter)
-#         ##InputFileFullPath: Path of the Premiere Xml file
-#         parser.add_argument('-i','--InputFileFullPath')
-#         parser.add_argument('-o','--OutputFileFullPath')
-#         parser.add_argument('-d','--Debug')
-#         parser.add_argument('-v', '--version', action='version', version=__version__)
-#         
-#     
-        # Process arguments
-#         args = parser.parse_args()
+        program_name = "Tiler"
+        program_version = "v%s" % __version__
+        program_build_date = str(__updated__)
+        program_version_message = '%s (%s)' % (program_version, program_build_date)
+     
+        # Setup argument parser
+        parser = ArgumentParser(description="Tiler", formatter_class=RawDescriptionHelpFormatter)
+        ##InputFileFullPath: Path of the Premiere Xml file
+        parser.add_argument('-i','--InputFileFullPath')
+        parser.add_argument('-o','--OutputFileFullPath')
+        parser.add_argument('-d','--Debug')
+        parser.add_argument('-v', '--version', action='version', version=__version__)
+         
+     
+#         Process arguments
+        args = parser.parse_args()
         
-        InputFileFullPath = "/home/immersiatv/Escritorio/CubemapDasher/Dash_Output/Ambisonic/Temp/sp_360left_1_cubemap_2880x1920.mp4"
-        OutputFileFullPath = "/home/immersiatv/Escritorio/CubemapDasher/Dash_Output/Ambisonic/Temp"
-        #folderToolbox.OutputMainFolders(args.InputFileFullPath,args.OutputFileFullPath)
-        folderToolbox.OutputMainFolders(InputFileFullPath,OutputFileFullPath)
-
-        self.window = Gtk.Window()
-        self.window.connect('destroy', self.quit)
-        self.window.set_default_size(800, 450)
-        self.drawingarea = Gtk.DrawingArea()
-        self.window.add(self.drawingarea)
+        #OutputFileFullPath = "/home/i2cat/...."
+        folderToolbox.OutputMainFolders(args.InputFileFullPath,args.OutputFileFullPath)
 
         # Create GStreamer pipeline
         self.create_named_pipe()
-        self.create_elements()
+        self.create_elements(args.InputFileFullPath)
         self.add_elents()
         self.link_elements()
         if TileMode:
-            self.startExternalEncoderAndMuxerProcess()
+            self.startExternalEncoderAndMuxerProcess(args.OutputFileFullPath)
 
         self.bus = self.pipeline.get_bus()
         self.bus.add_signal_watch()
@@ -182,11 +174,11 @@ class Tiler(object):
         self.bus.enable_sync_message_emission()
         self.bus.connect('sync-message::element', self.on_sync_message)
      
-    def create_elements (self):
+    def create_elements (self,InputFileFullPath):
         # Create GStreamer elements
         self.pipeline = Gst.Pipeline()
         self.source = Gst.ElementFactory.make("filesrc", "file-source")
-        self.source.set_property("location", "/home/immersiatv/Escritorio/CubemapDasher/Dash_Output/Ambisonic/Temp/sp_360left_1_cubemap_2880x1920.mp4")
+        self.source.set_property("location", InputFileFullPath)
         
         #Caps 
         caps = ("video/x-raw,format=I420,width=360,height=640")
@@ -333,9 +325,9 @@ class Tiler(object):
             pad.link(fv_pad)
 
             
-    def startExternalEncoderAndMuxerProcess(self):
+    def startExternalEncoderAndMuxerProcess(self, OutputFileFullPath):
         print("Tile.startExternalEncoderAndMuxerProcess")
-        outputFullPathTile= config.OuputhPath + "/"+ "Tile.mp4"
+        outputFullPathTile= OutputFileFullPath + "/"+ "Tile.mp4"
         inputEncoderFileFullPath = "/tmp/temp_files/tile.pipe"
         inputFramerate = config.frameRate
         
